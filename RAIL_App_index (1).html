@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Honeywell Bin Program -- RAIL | Boeing Distribution Services</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* -- Reset & Root ------------------------------------------------------------ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0B2545;
+  --navy-2:#13376B;
+  --steel:#1B5299;
+  --accent:#1E88E5;
+  --accent-light:#E8F4FD;
+  --bg:#F0F4F8;
+  --surface:#FFFFFF;
+  --surface-2:#F7FAFC;
+  --border:#DDE3EC;
+  --border-2:#C8D3E1;
+  --text-primary:#0D1B2A;
+  --text-secondary:#4A5568;
+  --text-muted:#8896A7;
+
+  --status-new-bg:#EBF5FF;--status-new-fg:#1565C0;
+  --status-ip-bg:#FFF8E1;--status-ip-fg:#E65100;
+  --status-hold-bg:#F3E5F5;--status-hold-fg:#6A1B9A;
+  --status-done-bg:#E8F5E9;--status-done-fg:#1B5E20;
+  --status-cancel-bg:#FAFAFA;--status-cancel-fg:#757575;
+
+  --pri-critical-bg:#FFEBEE;--pri-critical-fg:#B71C1C;
+  --pri-high-bg:#FFF3E0;--pri-high-fg:#BF360C;
+  --pri-med-bg:#E3F2FD;--pri-med-fg:#0D47A1;
+  --pri-low-bg:#F5F5F5;--pri-low-fg:#616161;
+
+  --red:#C62828;--amber:#E65100;--green:#2E7D32;
+  --red-bg:#FFEBEE;--amber-bg:#FFF3E0;--green-bg:#E8F5E9;
+
+  --radius:6px;--radius-lg:10px;--radius-xl:14px;
+  --shadow:0 1px 3px rgba(11,37,69,.08),0 1px 2px rgba(11,37,69,.06);
+  --shadow-md:0 4px 12px rgba(11,37,69,.1),0 2px 4px rgba(11,37,69,.06);
+  --shadow-lg:0 12px 32px rgba(11,37,69,.15),0 4px 8px rgba(11,37,69,.08);
+
+  --font-display:'Syne',sans-serif;
+  --font-body:'IBM Plex Sans',sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+}
+
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text-primary);font-size:13px;line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased}
+
+/* -- Layout Shell ------------------------------------------------------------ */
+.shell{display:flex;flex-direction:column;min-height:100vh}
+
+/* -- Header ------------------------------------------------------------------ */
+.header{
+  background:var(--navy);
+  padding:0 28px;
+  height:58px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:200;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.header-brand{display:flex;align-items:center;gap:14px}
+.brand-icon{
+  width:34px;height:34px;
+  background:linear-gradient(135deg,var(--steel),var(--accent));
+  border-radius:var(--radius);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.brand-icon svg{width:18px;height:18px;fill:white}
+.brand-text{}
+.brand-name{
+  font-family:var(--font-display);
+  font-size:14px;font-weight:600;
+  color:#fff;letter-spacing:-.1px;line-height:1.2;
+}
+.brand-sub{font-size:10px;color:rgba(255,255,255,.45);letter-spacing:.2px;font-weight:400}
+.header-right{display:flex;align-items:center;gap:10px}
+.header-date{
+  font-family:var(--font-mono);font-size:10px;
+  color:rgba(255,255,255,.4);
+  background:rgba(255,255,255,.06);
+  padding:4px 10px;border-radius:20px;
+}
+.header-version{
+  font-size:10px;color:rgba(255,255,255,.3);
+  background:rgba(255,255,255,.04);
+  padding:3px 8px;border-radius:4px;
+  border:1px solid rgba(255,255,255,.08);
+}
+
+/* -- Nav --------------------------------------------------------------------- */
+.nav-bar{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:0 28px;
+  display:flex;align-items:center;gap:0;
+  position:sticky;top:58px;z-index:190;
+}
+.nav-tab{
+  display:flex;align-items:center;gap:6px;
+  padding:13px 16px;
+  font-size:12px;font-weight:500;
+  color:var(--text-muted);
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  transition:color .15s,border-color .15s;
+  user-select:none;white-space:nowrap;
+}
+.nav-tab svg{width:14px;height:14px;flex-shrink:0}
+.nav-tab:hover{color:var(--text-primary)}
+.nav-tab.active{color:var(--navy);border-bottom-color:var(--steel);font-weight:600}
+.nav-badge{
+  background:var(--accent-light);color:var(--steel);
+  font-size:9px;font-weight:700;font-family:var(--font-mono);
+  padding:1px 5px;border-radius:10px;
+}
+
+/* -- Main Content ------------------------------------------------------------ */
+.main{flex:1;padding:22px 28px;max-width:1600px;width:100%}
+
+/* -- Metric Cards ------------------------------------------------------------ */
+.metrics-grid{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:20px;
+}
+.metric-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:14px 16px;
+  box-shadow:var(--shadow);
+  position:relative;overflow:hidden;
+  transition:box-shadow .2s,transform .15s;
+}
+.metric-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.metric-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;
+  height:3px;background:var(--card-accent,var(--border));
+  border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+}
+.metric-card.accent-navy{--card-accent:var(--navy)}
+.metric-card.accent-red{--card-accent:var(--red)}
+.metric-card.accent-amber{--card-accent:var(--amber)}
+.metric-card.accent-green{--card-accent:var(--green)}
+.metric-card.accent-steel{--card-accent:var(--steel)}
+.metric-card.accent-purple{--card-accent:#7B1FA2}
+.metric-label{
+  font-size:9px;font-weight:600;letter-spacing:.6px;
+  text-transform:uppercase;color:var(--text-muted);
+  margin-bottom:6px;
+}
+.metric-value{
+  font-family:var(--font-display);
+  font-size:26px;font-weight:700;
+  letter-spacing:-1px;line-height:1;
+  color:var(--metric-color,var(--text-primary));
+  margin-bottom:3px;
+}
+.metric-sub{font-size:10px;color:var(--text-muted)}
+
+/* -- Filter Bar -------------------------------------------------------------- */
+.filter-bar{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:14px;flex-wrap:wrap;
+}
+.search-wrap{position:relative;flex:1;min-width:200px;max-width:320px}
+.search-wrap .icon{
+  position:absolute;left:10px;top:50%;transform:translateY(-50%);
+  width:14px;height:14px;color:var(--text-muted);pointer-events:none;
+}
+.search-input{
+  width:100%;height:34px;
+  padding:0 12px 0 32px;
+  border:1px solid var(--border);border-radius:var(--radius);
+  font-family:var(--font-body);font-size:12px;
+  color:var(--text-primary);background:var(--surface);
+  transition:border-color .15s,box-shadow .15s;
+}
+.search-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(30,136,229,.1)}
+.filter-select{
+  height:34px;padding:0 10px;
+  border:1px solid var(--border);border-radius:var(--radius);
+  font-family:var(--font-body);font-size:12px;
+  color:var(--text-primary);background:var(--surface);
+  cursor:pointer;min-width:140px;
+  transition:border-color .15s;
+}
+.filter-select:focus{outline:none;border-color:var(--accent)}
+.filter-btn{
+  height:34px;padding:0 14px;
+  border:1px solid var(--border);border-radius:var(--radius);
+  font-family:var(--font-body);font-size:12px;font-weight:500;
+  color:var(--text-secondary);background:var(--surface);
+  cursor:pointer;display:flex;align-items:center;gap:6px;
+  transition:all .15s;white-space:nowrap;
+}
+.filter-btn:hover{border-color:var(--border-2);background:var(--surface-2)}
+.filter-btn.active{background:var(--navy);color:white;border-color:var(--navy)}
+.filter-btn svg{width:13px;height:13px}
+.filter-spacer{flex:1}
+.filter-count{
+  font-size:11px;color:var(--text-muted);
+  font-family:var(--font-mono);white-space:nowrap;
+}
+
+/* -- Export Button ----------------------------------------------------------- */
+.btn-export{
+  height:34px;padding:0 14px;
+  background:var(--navy);color:#fff;
+  border:none;border-radius:var(--radius);
+  font-family:var(--font-body);font-size:12px;font-weight:500;
+  cursor:pointer;display:flex;align-items:center;gap:6px;
+  transition:background .15s,transform .1s;
+}
+.btn-export:hover{background:var(--navy-2)}
+.btn-export:active{transform:scale(.98)}
+.btn-export svg{width:13px;height:13px}
+
+/* -- Table ------------------------------------------------------------------- */
+.table-container{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+.table-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:960px}
+thead{background:var(--surface-2);border-bottom:1px solid var(--border)}
+thead th{
+  padding:10px 14px;
+  text-align:left;
+  font-size:10px;font-weight:600;
+  letter-spacing:.5px;text-transform:uppercase;
+  color:var(--text-muted);
+  white-space:nowrap;
+  cursor:pointer;user-select:none;
+  transition:color .15s;
+}
+thead th:hover{color:var(--text-primary)}
+thead th.sort-asc::after{content:' ^';color:var(--steel)}
+thead th.sort-desc::after{content:' v';color:var(--steel)}
+tbody tr{
+  border-bottom:1px solid #F1F5F9;
+  cursor:pointer;
+  transition:background .1s;
+}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#F8FAFB}
+tbody tr.row-overdue{background:#FFF8F8}
+tbody tr.row-overdue:hover{background:#FFF0F0}
+tbody tr.row-completed td{opacity:.6}
+tbody tr.row-completed:hover{background:var(--surface-2)}
+td{padding:9px 14px;vertical-align:middle}
+.col-id{
+  font-family:var(--font-mono);font-size:10px;
+  color:var(--text-muted);white-space:nowrap;width:90px;
+}
+.col-cat{
+  font-size:10px;color:var(--text-secondary);
+  white-space:nowrap;width:130px;
+}
+.col-action{
+  max-width:380px;font-size:12px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-weight:400;
+}
+.col-owner{font-size:12px;white-space:nowrap;width:140px}
+.col-priority{width:88px}
+.col-due{width:100px}
+.col-status{width:110px}
+
+/* -- Badges ------------------------------------------------------------------- */
+.badge{
+  display:inline-flex;align-items:center;
+  padding:3px 8px;border-radius:4px;
+  font-size:10px;font-weight:600;
+  white-space:nowrap;letter-spacing:.2px;
+}
+.badge-New{background:var(--status-new-bg);color:var(--status-new-fg)}
+.badge-In-Progress,.badge-InProgress{background:var(--status-ip-bg);color:var(--status-ip-fg)}
+.badge-On-Hold,.badge-OnHold{background:var(--status-hold-bg);color:var(--status-hold-fg)}
+.badge-Completed{background:var(--status-done-bg);color:var(--status-done-fg)}
+.badge-Canceled{background:var(--status-cancel-bg);color:var(--status-cancel-fg)}
+
+.pri-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 8px;border-radius:4px;
+  font-size:10px;font-weight:700;white-space:nowrap;
+}
+.pri-badge::before{content:'';width:5px;height:5px;border-radius:50%;display:inline-block;background:currentColor;opacity:.7}
+.pri-Critical{background:var(--pri-critical-bg);color:var(--pri-critical-fg)}
+.pri-High{background:var(--pri-high-bg);color:var(--pri-high-fg)}
+.pri-Medium{background:var(--pri-med-bg);color:var(--pri-med-fg)}
+.pri-Low{background:var(--pri-low-bg);color:var(--pri-low-fg)}
+
+.date-overdue{color:var(--red);font-weight:600;font-size:11px;font-family:var(--font-mono)}
+.date-warn{color:var(--amber);font-weight:600;font-size:11px;font-family:var(--font-mono)}
+.date-ok{color:var(--text-muted);font-size:11px;font-family:var(--font-mono)}
+.date-none{color:#C8D3E1;font-size:11px;font-family:var(--font-mono)}
+
+/* -- Pagination -------------------------------------------------------------- */
+.pagination{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px;
+  background:var(--surface-2);
+  border-top:1px solid var(--border);
+}
+.page-info{font-size:11px;color:var(--text-muted);font-family:var(--font-mono)}
+.page-btns{display:flex;gap:4px}
+.page-btn{
+  height:28px;min-width:28px;padding:0 8px;
+  border:1px solid var(--border);border-radius:var(--radius);
+  background:var(--surface);
+  font-family:var(--font-body);font-size:11px;
+  color:var(--text-secondary);cursor:pointer;
+  transition:all .15s;
+}
+.page-btn:hover:not(:disabled){background:var(--surface-2);border-color:var(--border-2)}
+.page-btn:disabled{opacity:.35;cursor:default}
+.page-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.page-ellipsis{padding:0 4px;line-height:28px;color:var(--text-muted);font-size:12px}
+
+/* -- Empty State ------------------------------------------------------------- */
+.empty-state{
+  text-align:center;padding:60px 20px;
+  color:var(--text-muted);
+}
+.empty-icon{
+  width:48px;height:48px;
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:12px;margin:0 auto 12px;
+  display:flex;align-items:center;justify-content:center;
+}
+.empty-icon svg{width:22px;height:22px;color:var(--text-muted)}
+.empty-title{font-size:14px;font-weight:500;margin-bottom:4px;color:var(--text-secondary)}
+.empty-sub{font-size:12px}
+
+/* -- Modal ------------------------------------------------------------------- */
+.modal-overlay{
+  display:none;
+  position:fixed;inset:0;
+  background:rgba(11,37,69,.45);
+  backdrop-filter:blur(3px);
+  z-index:500;
+  align-items:center;justify-content:center;
+  animation:fadeIn .15s ease;
+}
+.modal-overlay.open{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--surface);
+  border-radius:var(--radius-xl);
+  width:640px;max-width:95vw;
+  max-height:88vh;overflow-y:auto;
+  box-shadow:var(--shadow-lg);
+  border:1px solid var(--border);
+  animation:slideUp .2s cubic-bezier(.16,1,.3,1);
+}
+@keyframes slideUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-header{
+  padding:20px 22px 16px;
+  border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:flex-start;gap:14px;
+  position:sticky;top:0;background:var(--surface);z-index:1;
+}
+.modal-header-left{flex:1;min-width:0}
+.modal-rail-id{
+  font-family:var(--font-mono);font-size:10px;
+  color:var(--text-muted);margin-bottom:5px;
+  display:flex;align-items:center;gap:8px;
+}
+.modal-action-title{
+  font-family:var(--font-display);
+  font-size:15px;font-weight:600;
+  color:var(--navy);line-height:1.4;
+}
+.modal-close{
+  width:30px;height:30px;flex-shrink:0;
+  border:1px solid var(--border);border-radius:var(--radius);
+  background:var(--surface-2);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--text-muted);
+  font-size:18px;line-height:1;
+  transition:all .15s;
+}
+.modal-close:hover{background:var(--border);color:var(--text-primary)}
+.modal-body{padding:18px 22px}
+.modal-meta-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:12px;margin-bottom:18px;
+}
+.meta-field{}
+.meta-label{
+  font-size:9px;font-weight:600;letter-spacing:.6px;
+  text-transform:uppercase;color:var(--text-muted);
+  margin-bottom:4px;
+}
+.meta-value{font-size:13px;color:var(--text-primary)}
+.modal-divider{
+  height:1px;background:var(--border);
+  margin:0 0 16px;
+}
+.comments-label{
+  font-size:9px;font-weight:600;letter-spacing:.6px;
+  text-transform:uppercase;color:var(--text-muted);
+  margin-bottom:8px;
+}
+.comments-box{
+  background:var(--surface-2);
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:12px 14px;
+  font-size:12px;color:var(--text-secondary);
+  line-height:1.7;white-space:pre-wrap;
+  max-height:220px;overflow-y:auto;
+  font-family:var(--font-body);
+}
+
+/* -- Edit Panel (in modal) --------------------------------------------------- */
+.edit-section{margin-top:18px;padding-top:16px;border-top:1px solid var(--border)}
+.edit-section-title{
+  font-size:11px;font-weight:600;color:var(--text-secondary);
+  margin-bottom:12px;
+  display:flex;align-items:center;gap:6px;
+}
+.edit-section-title svg{width:13px;height:13px}
+.edit-row{display:flex;gap:10px;margin-bottom:10px}
+.edit-field{flex:1}
+.edit-label{
+  font-size:10px;font-weight:500;color:var(--text-secondary);
+  margin-bottom:4px;display:block;
+}
+.edit-select,.edit-textarea{
+  width:100%;
+  border:1px solid var(--border);border-radius:var(--radius);
+  font-family:var(--font-body);font-size:12px;
+  color:var(--text-primary);background:var(--surface);
+  transition:border-color .15s,box-shadow .15s;
+}
+.edit-select{height:34px;padding:0 10px;cursor:pointer}
+.edit-textarea{
+  padding:10px 12px;resize:vertical;min-height:80px;line-height:1.5;
+}
+.edit-select:focus,.edit-textarea:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(30,136,229,.1);
+}
+.edit-actions{display:flex;gap:8px;margin-top:14px;justify-content:flex-end}
+.btn-save{
+  height:34px;padding:0 18px;
+  background:var(--navy);color:#fff;
+  border:none;border-radius:var(--radius);
+  font-family:var(--font-body);font-size:12px;font-weight:500;
+  cursor:pointer;transition:background .15s;
+}
+.btn-save:hover{background:var(--navy-2)}
+.btn-cancel{
+  height:34px;padding:0 14px;
+  background:transparent;color:var(--text-secondary);
+  border:1px solid var(--border);border-radius:var(--radius);
+  font-family:var(--font-body);font-size:12px;
+  cursor:pointer;transition:all .15s;
+}
+.btn-cancel:hover{background:var(--surface-2)}
+.save-success{
+  display:none;align-items:center;gap:6px;
+  font-size:11px;color:var(--green);
+  padding:6px 10px;background:var(--green-bg);
+  border-radius:var(--radius);
+}
+.save-success.show{display:flex}
+
+/* -- Dashboard --------------------------------------------------------------- */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.dash-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:18px;
+  box-shadow:var(--shadow);
+}
+.dash-card-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;
+}
+.dash-card-title{
+  font-size:11px;font-weight:600;letter-spacing:.5px;
+  text-transform:uppercase;color:var(--text-muted);
+}
+.dash-card-count{
+  font-family:var(--font-mono);font-size:11px;
+  color:var(--text-muted);
+  background:var(--surface-2);padding:2px 7px;
+  border-radius:10px;border:1px solid var(--border);
+}
+.owner-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 0;border-bottom:1px solid #F1F5F9;
+}
+.owner-row:last-child{border-bottom:none}
+.owner-name{font-size:12px;font-weight:500;color:var(--text-primary)}
+.owner-pills{display:flex;gap:5px}
+.owner-pill{
+  font-size:10px;font-weight:600;padding:2px 7px;
+  border-radius:10px;font-family:var(--font-mono);
+}
+.pill-new{background:var(--status-new-bg);color:var(--status-new-fg)}
+.pill-ip{background:var(--status-ip-bg);color:var(--status-ip-fg)}
+.pill-hold{background:var(--status-hold-bg);color:var(--status-hold-fg)}
+.pill-total{background:var(--navy);color:#fff}
+
+.bar-item{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.bar-label{font-size:11px;color:var(--text-primary);width:150px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{flex:1;height:7px;background:var(--surface-2);border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+.bar-fill{height:100%;border-radius:4px;transition:width .6s cubic-bezier(.16,1,.3,1)}
+.bar-count{font-size:11px;font-family:var(--font-mono);color:var(--text-muted);min-width:22px;text-align:right}
+
+.status-donut-row{display:flex;align-items:center;gap:16px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)}
+.donut-item{display:flex;align-items:center;gap:6px}
+.donut-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.donut-label{font-size:11px;color:var(--text-secondary)}
+.donut-val{font-size:11px;font-weight:600;font-family:var(--font-mono);color:var(--text-primary);margin-left:2px}
+
+/* -- Toast ------------------------------------------------------------------- */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--navy);color:#fff;
+  padding:10px 16px;border-radius:var(--radius-lg);
+  font-size:12px;font-weight:500;
+  box-shadow:var(--shadow-lg);
+  transform:translateY(20px);opacity:0;
+  transition:all .3s cubic-bezier(.16,1,.3,1);
+  z-index:600;display:flex;align-items:center;gap:8px;
+  pointer-events:none;
+}
+.toast.show{transform:translateY(0);opacity:1}
+.toast svg{width:14px;height:14px}
+
+/* -- Responsive -------------------------------------------------------------- */
+@media(max-width:1100px){
+  .metrics-grid{grid-template-columns:repeat(3,1fr)}
+  .dash-grid{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .header{padding:0 16px}
+  .main{padding:16px}
+  .metrics-grid{grid-template-columns:repeat(2,1fr)}
+  .filter-bar{gap:6px}
+}
+
+/* -- Print Styles ------------------------------------------------------------ */
+@media print{
+  .header,.nav-bar,.filter-bar,.pagination,.modal-overlay,.toast{display:none!important}
+  .main{padding:0}
+  .table-container{box-shadow:none;border:1px solid #ccc}
+  body{background:white}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- Header -->
+<header class="header">
+  <div class="header-brand">
+    <div class="brand-icon">
+      <svg viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>
+    </div>
+    <div class="brand-text">
+      <div class="brand-name">Honeywell Bin Program -- RAIL</div>
+      <div class="brand-sub">Boeing Distribution Services * Program Management * Chandler, AZ</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="header-date" id="header-date"></div>
+    <div class="header-version">v1.0 Static</div>
+  </div>
+</header>
+
+<!-- Nav -->
+<nav class="nav-bar">
+  <div class="nav-tab active" id="tab-btn-rail" onclick="switchTab('rail',this)">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="14" height="10" rx="1.5"/><line x1="1" y1="6" x2="15" y2="6"/><line x1="5" y1="6" x2="5" y2="13"/></svg>
+    Action Items
+    <span class="nav-badge" id="open-badge">--</span>
+  </div>
+  <div class="nav-tab" id="tab-btn-dash" onclick="switchTab('dash',this)">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="8" rx="1"/><rect x="9" y="1" width="6" height="4" rx="1"/><rect x="9" y="7" width="6" height="8" rx="1"/><rect x="1" y="11" width="6" height="4" rx="1"/></svg>
+    PM Dashboard
+  </div>
+</nav>
+
+<!-- Main -->
+<main class="main" id="main-content">
+
+  <!-- -- RAIL Tab -- -->
+  <div id="view-rail">
+    <div class="metrics-grid" id="metrics-grid"></div>
+
+    <div class="filter-bar">
+      <div class="search-wrap">
+        <svg class="icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="5"/><line x1="10.5" y1="10.5" x2="14" y2="14"/></svg>
+        <input class="search-input" id="search" placeholder="Search actions, owners, IDs..." oninput="applyFilters()">
+      </div>
+      <select class="filter-select" id="f-status" onchange="applyFilters()">
+        <option value="">All Statuses</option>
+        <option>New</option><option>In Progress</option><option>On Hold</option><option>Completed</option><option>Canceled</option>
+      </select>
+      <select class="filter-select" id="f-priority" onchange="applyFilters()">
+        <option value="">All Priorities</option>
+        <option>Critical</option><option>High</option><option>Medium</option><option>Low</option>
+      </select>
+      <select class="filter-select" id="f-category" onchange="applyFilters()"></select>
+      <select class="filter-select" id="f-owner" onchange="applyFilters()"></select>
+      <button class="filter-btn" id="overdue-btn" onclick="toggleOverdue(this)">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><line x1="8" y1="4.5" x2="8" y2="8.5"/><circle cx="8" cy="10.5" r=".5" fill="currentColor"/></svg>
+        Overdue Only
+      </button>
+      <div class="filter-spacer"></div>
+      <span class="filter-count" id="filter-count"></span>
+      <button class="btn-export" onclick="exportCSV()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v8M5 7l3 3 3-3"/><path d="M3 11v2h10v-2"/></svg>
+        Export CSV
+      </button>
+    </div>
+
+    <div class="table-container">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th onclick="sortBy('id',event)">ID</th>
+              <th onclick="sortBy('category',event)">Category</th>
+              <th onclick="sortBy('action',event)" style="width:38%">Action</th>
+              <th onclick="sortBy('primaryOwner',event)">Owner</th>
+              <th onclick="sortBy('priority',event)">Priority</th>
+              <th onclick="sortBy('dueDate',event)">Due Date</th>
+              <th onclick="sortBy('status',event)">Status</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </div>
+
+  <!-- -- Dashboard Tab -- -->
+  <div id="view-dash" style="display:none">
+    <div class="dash-grid" id="dash-grid"></div>
+  </div>
+
+</main>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal" onclick="handleModalClick(event)">
+  <div class="modal" id="modal-inner">
+    <div class="modal-header">
+      <div class="modal-header-left">
+        <div class="modal-rail-id">
+          <span id="m-id"></span>
+          <span id="m-cat-badge"></span>
+        </div>
+        <div class="modal-action-title" id="m-action"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()" title="Close">x</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-meta-grid">
+        <div class="meta-field"><div class="meta-label">Status</div><div class="meta-value" id="m-status"></div></div>
+        <div class="meta-field"><div class="meta-label">Priority</div><div class="meta-value" id="m-priority"></div></div>
+        <div class="meta-field"><div class="meta-label">Primary Owner</div><div class="meta-value" id="m-owner"></div></div>
+        <div class="meta-field"><div class="meta-label">Supporting Owners</div><div class="meta-value" id="m-support"></div></div>
+        <div class="meta-field"><div class="meta-label">Due Date</div><div class="meta-value" id="m-due"></div></div>
+        <div class="meta-field"><div class="meta-label">Date Added</div><div class="meta-value" id="m-added"></div></div>
+        <div class="meta-field"><div class="meta-label">Honeywell Site</div><div class="meta-value" id="m-site"></div></div>
+        <div class="meta-field"><div class="meta-label">Function</div><div class="meta-value" id="m-func"></div></div>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="comments-label">Comments / Notes</div>
+      <div class="comments-box" id="m-comments"></div>
+
+      <!-- Edit section -->
+      <div class="edit-section">
+        <div class="edit-section-title">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 2l3 3-9 9H2v-3L11 2z"/></svg>
+          Update This Action
+        </div>
+        <div class="edit-row">
+          <div class="edit-field">
+            <label class="edit-label">Status</label>
+            <select class="edit-select" id="edit-status">
+              <option>New</option><option>In Progress</option><option>On Hold</option><option>Completed</option><option>Canceled</option>
+            </select>
+          </div>
+          <div class="edit-field">
+            <label class="edit-label">Priority</label>
+            <select class="edit-select" id="edit-priority">
+              <option>Critical</option><option>High</option><option>Medium</option><option>Low</option>
+            </select>
+          </div>
+        </div>
+        <div class="edit-field" style="margin-bottom:10px">
+          <label class="edit-label">Add Comment (will be appended with today's date)</label>
+          <textarea class="edit-textarea" id="edit-comment" placeholder="Enter update or comment..."></textarea>
+        </div>
+        <div class="edit-actions">
+          <div class="save-success" id="save-success">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 8 6 12 14 4"/></svg>
+            Saved locally
+          </div>
+          <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+          <button class="btn-save" onclick="saveEdit()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 8 6 12 14 4"/></svg>
+  <span id="toast-msg"></span>
+</div>
+
+<script>
+// -- Data ---------------------------------------------------------------------
+const RAW_DATA=[{"id":"RAIL-001","category":"Bin Audit","dateAdded":"2025-08-10","site":"Tempe","primaryOwner":"Roman Corona","supportingOwners":"","action":"Burn down to resolve the failed sans that still are outstanding (~200 bins)","priority":"Critical","dueDate":"2025-08-13","function":"Program Management","status":"Completed","comments":"The burndown was completed. This will be dynamic as scans fail, work resolution."},{"id":"RAIL-002","category":"Bin Audit","dateAdded":"2025-08-14","site":"Sky Harbor","primaryOwner":"Roman Corona","supportingOwners":"","action":"Let the team know that Proponent has severe packing issues affecting human capital management at the sites","priority":"High","dueDate":"2025-08-21","function":"Program Management","status":"Completed","comments":"Ginger said that Dawn Smith is working on this. Fred was advised 8/28 that he should this issue resolved in future orders."},{"id":"RAIL-003","category":"Bin Audit","dateAdded":"2025-08-21","site":"Sky Harbor R&O","primaryOwner":"Javier Padron","supportingOwners":"","action":"Request from Honeywell to have Dallas be on-site at 7-8am","priority":"High","dueDate":"2025-08-28","function":"Operations","status":"Completed","comments":"8.26 -- Javi said Dallas will start 8:30-5 schedule September 1st."},{"id":"RAIL-004","category":"Bin Audit","dateAdded":"2025-08-21","site":"Sky Harbor R&O","primaryOwner":"Roman Corona","supportingOwners":"","action":"Bring Scan Gun to next week's R&O site visit","priority":"Medium","dueDate":"2025-08-28","function":"Program Management","status":"Completed","comments":"8.25 -- Roman received scan gun and will have for site visit at R&O."},{"id":"RAIL-005","category":"Bin Audit","dateAdded":"2025-08-21","site":"Sky Harbor R&O","primaryOwner":"Javier Padron","supportingOwners":"","action":"Honeywell is asking for detailed standard work outline for material handlers and how they are being measured.","priority":"High","dueDate":"2026-01-23","function":"Operations","status":"Completed","comments":"1.16.26 -- 11.24 -- Tomorrow 11.25 rolling out new standard of work."},{"id":"RAIL-006","category":"Bin Audit","dateAdded":"2025-08-21","site":"Sky Harbor R&O","primaryOwner":"Aaron Geddes","supportingOwners":"","action":"Honeywell request to add expiration dates to shelf life items in Lisa Timm's report.","priority":"Medium","dueDate":"2025-08-28","function":"P&E","status":"Completed","comments":"8.22 -- Tagged up with Aaron and he said Lisa is not able to add this to the report."},{"id":"RAIL-007","category":"Bin Audit","dateAdded":"2026-03-27","site":"All Sites","primaryOwner":"Boeing Functions","supportingOwners":"","action":"QBR Preparation -- build agenda of points we want to discuss with the Honeywell Team.","priority":"High","dueDate":"2026-04-03","function":"Boeing Sales","status":"New","comments":""},{"id":"RAIL-008","category":"Bin Audit","dateAdded":"2025-08-22","site":"Engines","primaryOwner":"Karen Mark","supportingOwners":"Roman Corona","action":"Bin Stratification needs to be done for the kitting site.","priority":"High","dueDate":"2025-08-27","function":"Program Management","status":"Completed","comments":"8.26 -- Karen shared that Program Solutions will work the bin stratification."},{"id":"RAIL-009","category":"Bin Audit","dateAdded":"2025-08-27","site":"All Sites","primaryOwner":"Roman Corona","supportingOwners":"","action":"Provide Karen with date details and Honeywell site info for bin optimization executions","priority":"Medium","dueDate":"2025-08-29","function":"Program Management","status":"Completed","comments":"9.3 -- Roman has provided initial scan audits to Karen."},{"id":"RAIL-010","category":"Bin Audit","dateAdded":"2025-08-26","site":"Engines","primaryOwner":"Roman Corona","supportingOwners":"Javi Padron","action":"Identify standard inactive bins across 3 sites and discuss adding visual indicator to identify bin status (active/inactive)","priority":"High","dueDate":"2025-11-15","function":"Program Management","status":"Completed","comments":"11.24 -- We are not executing this. 10.15 -- Javi plans on deploying green and red date stickers."},{"id":"RAIL-011","category":"Bin Audit","dateAdded":"2025-09-08","site":"All Sites","primaryOwner":"Roger McCully","supportingOwners":"Chris Ball","action":"Extend inactive parts to anything with no usage greater than 5 years?","priority":"High","dueDate":"2025-12-15","function":"Boeing Sales","status":"On Hold","comments":"11.17 -- Honeywell FSR and commodity need to align. Boeing is defining inactive as 0 scans in the past 12 months."},{"id":"RAIL-012","category":"Bin Audit","dateAdded":"2025-09-08","site":"All Sites","primaryOwner":"Honeywell Team","supportingOwners":"","action":"Badge Dylan, Javi, and additional Boeing personnel","priority":"High","dueDate":"2025-09-15","function":"TBD","status":"Completed","comments":"10.15 -- Ops team members have badging."},{"id":"RAIL-013","category":"Bin Audit","dateAdded":"2025-10-15","site":"Engines","primaryOwner":"Javi Padron","supportingOwners":"","action":"Boeing to deliver kits starting this week","priority":"High","dueDate":"2025-10-22","function":"Operations","status":"Completed","comments":"10.15 -- Need to discuss logistics for kit deliveries to Honeywell Engines."},{"id":"RAIL-014","category":"Bin Audit","dateAdded":"2025-10-15","site":"All Sites","primaryOwner":"Roger McCully","supportingOwners":"Chris Ball","action":"We need to price everything that has been used in the last 3 years (Honeywell request)","priority":"High","dueDate":"2025-12-15","function":"Boeing Sales","status":"On Hold","comments":"11.10 -- Chris working the bulk of the list."},{"id":"RAIL-015","category":"Bin Audit","dateAdded":"2025-10-15","site":"All Sites","primaryOwner":"Roger McCully","supportingOwners":"Chris Ball","action":"OTD Rebuttal -- Michael to confirm their assertion","priority":"High","dueDate":"2025-10-31","function":"Boeing Sales","status":"Completed","comments":"10.15 -- We need to rebut OTD and need to see the calculation formula."},{"id":"RAIL-016","category":"Bin Audit","dateAdded":"2025-10-15","site":"All Sites","primaryOwner":"Javi Padron","supportingOwners":"","action":"Material Handlers migrating to use BDSI Connect App","priority":"High","dueDate":"2025-10-31","function":"Operations","status":"Completed","comments":"10.15 -- We have a monthly requirement to share data reporting OTD with Honeywell."},{"id":"RAIL-017","category":"Bin Audit","dateAdded":"2025-10-17","site":"All Sites","primaryOwner":"Roman Corona","supportingOwners":"Karen Mark","action":"Review the scan activity at Engines for September to align on message.","priority":"High","dueDate":"2025-10-23","function":"Program Management","status":"Completed","comments":"10.23 -- Inactivity of scans on consecutive days is still undetermined."},{"id":"RAIL-018","category":"Bin Audit","dateAdded":"2025-10-23","site":"All Sites","primaryOwner":"Roman Corona","supportingOwners":"","action":"We need to validate the OTD score that is being sent by Honeywell.","priority":"High","dueDate":"2025-11-04","function":"Program Management","status":"Completed","comments":"11.4 -- Kevin Morgan needs to get an email once we confirm OTTR vice OTD."},{"id":"RAIL-019","category":"Bin Audit","dateAdded":"2025-10-27","site":"All Sites","primaryOwner":"Rob Walker","supportingOwners":"Javi Padron","action":"Operations having issues uploading scans to the system. Takes multiple tries.","priority":"High","dueDate":"2025-11-10","function":"Program Solutions","status":"Completed","comments":"Javi needs to respond to Rob about the errors when trying to upload scan activity."},{"id":"RAIL-020","category":"Bin Audit","dateAdded":"2025-10-24","site":"All Sites","primaryOwner":"Roman Corona","supportingOwners":"","action":"KPI Deployment on Mondays","priority":"High","dueDate":"2025-11-17","function":"Program Management","status":"Completed","comments":"11.10 -- Corona needs to add baselines so that we can see how far or close we are to goals."},{"id":"RAIL-021","category":"Bin Audit","dateAdded":"2025-11-04","site":"All Sites","primaryOwner":"Aaron Geddes","supportingOwners":"Javi Padron","action":"Develop process for cross dock for CPL items","priority":"High","dueDate":"2025-11-18","function":"P&E","status":"On Hold","comments":"11.17 -- Managers need to meet to develop and expand a process."},{"id":"RAIL-022","category":"Bin Audit","dateAdded":"2025-11-04","site":"All Sites","primaryOwner":"Michael Kleim","supportingOwners":"Bob Milne","action":"Individual packaging (Proponent)","priority":"High","dueDate":"2026-01-23","function":"Program Management","status":"Completed","comments":"11.17 -- Proponent has the current action."},{"id":"RAIL-023","category":"Bin Audit","dateAdded":"2025-11-04","site":"All Sites","primaryOwner":"Rob Walker","supportingOwners":"","action":"See numbers from having 1 scan.","priority":"High","dueDate":"2026-01-23","function":"Program Solutions","status":"Completed","comments":"We currently have system controls to allow 1 scan per bin."},{"id":"RAIL-024","category":"Bin Audit","dateAdded":"2025-11-04","site":"All Sites","primaryOwner":"Roman Corona","supportingOwners":"","action":"Send OTD Data Dispute Notice to Honeywell","priority":"High","dueDate":"2025-11-05","function":"Program Management","status":"Completed","comments":"11/5/2025 -- Corona deployed OTD Data Dispute Notice to Honeywell Commodity Team."},{"id":"RAIL-025","category":"Bin Audit","dateAdded":"2025-11-07","site":"All Sites","primaryOwner":"Jose Mier","supportingOwners":"","action":"Manual approval required for ~500 items to add WH path flag to SO; prioritize 958 PD items worth $2.4M","priority":"High","dueDate":"2026-01-23","function":"P&E","status":"Completed","comments":"12/15: total lines down to ~500 lines."},{"id":"RAIL-026","category":"Bin Audit","dateAdded":"2026-01-07","site":"All Sites","primaryOwner":"Yogesh","supportingOwners":"Michael Kleim","action":"Honeywell needs to only send POs with SPOC 002 and in no other format","priority":"High","dueDate":"2026-03-31","function":"Honeywell Team","status":"In Progress","comments":"2.27 -- Chris to get with Roger about current progress. We need to engage Yogesh as well."},{"id":"RAIL-027","category":"Bin Audit","dateAdded":"2025-11-07","site":"All Sites","primaryOwner":"Chris Ball","supportingOwners":"","action":"Proposal Cleanup: 2500 SA parts unpriced; 32 GA parts unpriced; 7 novated parts priced, 17 removed from novation needing pricing","priority":"High","dueDate":"2025-12-17","function":"Boeing Sales","status":"Completed","comments":"12/15: Roger received file from Honeywell and will review on Wednesday."},{"id":"RAIL-028","category":"Bin Audit","dateAdded":"2025-11-07","site":"All Sites","primaryOwner":"Franzis Schiavo","supportingOwners":"","action":"Novation review one week prior with Ester (internal)","priority":"High","dueDate":"2025-11-16","function":"Product Line","status":"Completed","comments":""},{"id":"RAIL-029","category":"Bin Audit","dateAdded":"2025-11-07","site":"All Sites","primaryOwner":"Roger McCully","supportingOwners":"","action":"LTC penetration","priority":"High","dueDate":"2025-12-30","function":"Boeing Sales","status":"Completed","comments":"11.24 -- 10% increase for our goal for 2026. 26% is our current LTC penetration."},{"id":"RAIL-030","category":"Bin Audit","dateAdded":"2026-01-29","site":"All Sites","primaryOwner":"Roman Corona","supportingOwners":"","action":"EDI allowing weekend drop ins?","priority":"High","dueDate":"2026-02-27","function":"IT","status":"Completed","comments":"2.27 -- Corona to get with Yogesh on this. Orders should not be dropped over the weekend or holidays."},{"id":"RAIL-031","category":"Bin Audit","dateAdded":"2025-11-07","site":"All Sites","primaryOwner":"Roger McCully","supportingOwners":"","action":"Need to have a definition to what constitutes a line stop","priority":"High","dueDate":"2025-11-30","function":"Boeing Sales","status":"On Hold","comments":"Honeywell wants to assert us for line stops and reputational damage -- 516 line stops."},{"id":"RAIL-032","category":"Bin Audit","dateAdded":"2025-11-07","site":"All Sites","primaryOwner":"Roger McCully","supportingOwners":"","action":"2025 OTD Claim","priority":"High","dueDate":"2025-11-20","function":"Boeing Sales","status":"Completed","comments":"11.19: Credit memo in the amount of $400k issued."},{"id":"RAIL-033","category":"Bin Audit","dateAdded":"2025-11-07","site":"All Sites","primaryOwner":"Roger McCully","supportingOwners":"","action":"BD Offload of Underwater LTC Products","priority":"High","dueDate":"2025-11-20","function":"Boeing Sales","status":"Completed","comments":"Pending BD internal review."},{"id":"RAIL-034","category":"Bin Audit","dateAdded":"2025-11-07","site":"All Sites","primaryOwner":"Roger McCully","supportingOwners":"","action":"Market Test Query: Scope is 49 parts @ $13.9M of annual spend","priority":"High","dueDate":"2026-03-31","function":"Boeing Sales","status":"On Hold","comments":"2.16 -- Waiting on Honeywell response/action."},{"id":"RAIL-035","category":"Bin Audit","dateAdded":"2025-11-07","site":"All Sites","primaryOwner":"Roger McCully","supportingOwners":"","action":"Single v Limited Source Breakdown -- Boeing strategy for Honeywell single-source market challenge(s)","priority":"High","dueDate":"2025-12-17","function":"Boeing Sales","status":"On Hold","comments":"12/19 -- Currently exploring other avenues."},{"id":"RAIL-036","category":"Bin Audit","dateAdded":"2026-01-12","site":"Urbana","primaryOwner":"Kevin Morgan","supportingOwners":"Joshua Huaggett, Chris Ball","action":"Honeywell Internal Part Number misalignment at Urbana only.","priority":"High","dueDate":"2026-05-29","function":"Honeywell Team","status":"In Progress","comments":"Urbana ordering the contract part and want their Customer Reference PN on the packing slip."},{"id":"RAIL-037","category":"Bin Audit","dateAdded":"2025-11-17","site":"Sky Harbor","primaryOwner":"Roman Corona","supportingOwners":"","action":"Site reported an increase in the next 4-6 months. Going from 18 engines a week to 40 engines a week","priority":"High","dueDate":"2025-11-30","function":"Program Management","status":"Completed","comments":"11.24 -- Received file from Fred and working the data to see the impact of the ramp-up."},{"id":"RAIL-038","category":"Bin Audit","dateAdded":"2025-11-07","site":"Celestica","primaryOwner":"Roger McCully","supportingOwners":"","action":"Next steps to address the support and help needed to support Honeywell Celestica","priority":"High","dueDate":"2025-11-20","function":"Boeing Sales","status":"On Hold","comments":"11.17 -- Roger will set up a call with Celestica leadership."},{"id":"RAIL-039","category":"Bin Audit","dateAdded":"2025-11-07","site":"All Sites","primaryOwner":"Chris Ball","supportingOwners":"","action":"Total count of parts on final FCST for 2025?","priority":"Medium","dueDate":"2025-11-20","function":"Boeing Sales","status":"Completed","comments":"11.24 -- Verified that data/numbers are accurate."},{"id":"RAIL-040","category":"Bin Audit","dateAdded":"2025-12-05","site":"All Sites","primaryOwner":"Javi Padron","supportingOwners":"","action":"Reconcile and receive outstanding stock transfers not yet posted.","priority":"High","dueDate":"2026-03-31","function":"Operations","status":"In Progress","comments":"3.27 -- Javi awaiting response and still in progress."},{"id":"RAIL-041","category":"Bin Audit","dateAdded":"2026-02-10","site":"All Sites","primaryOwner":"Aaron Geddes","supportingOwners":"","action":"WMS not manifesting properly -- customer not getting final invoice after order invoiced","priority":"Critical","dueDate":"2026-04-02","function":"P&E","status":"In Progress","comments":"3.27 -- Joshua owes report to Aaron by next Friday for everything that we show shipped but they show open."},{"id":"RAIL-042","category":"Bin Audit","dateAdded":"2025-12-05","site":"All Sites","primaryOwner":"Aaron Geddes","supportingOwners":"","action":"Correct batch characteristic mismatches preventing processing.","priority":"High","dueDate":"2026-01-23","function":"P&E","status":"Completed","comments":"Reduced from 257 lines to 200. Continued cleanup needed."},{"id":"RAIL-043","category":"Bin Audit","dateAdded":"2025-12-05","site":"All Sites","primaryOwner":"Mary M","supportingOwners":"","action":"Complete required inspection plans for incoming HON material.","priority":"High","dueDate":"2026-01-15","function":"QA","status":"Completed","comments":"Total down from 703 to 658."},{"id":"RAIL-044","category":"Bin Audit","dateAdded":"2025-12-09","site":"Engines","primaryOwner":"Javi Padron","supportingOwners":"","action":"7500 kit updates to kitting metrics","priority":"High","dueDate":"2026-03-30","function":"Operations","status":"Completed","comments":""},{"id":"RAIL-045","category":"Bin Audit","dateAdded":"2025-12-15","site":"Sky Harbor","primaryOwner":"Roman Corona","supportingOwners":"Brian Chan","action":"Ramp-Up Workbenches Completion","priority":"High","dueDate":"2026-02-12","function":"Program Management","status":"Completed","comments":"1.29 -- Honeywell Sky Harbor has not built the 4 workstations as communicated."},{"id":"RAIL-046","category":"Bin Audit","dateAdded":"2025-12-15","site":"Celestica","primaryOwner":"Aaron Geddes","supportingOwners":"","action":"P&E to set up meeting to invite Celestica on-site (Chandler) to establish work session","priority":"High","dueDate":"2026-02-19","function":"P&E","status":"Completed","comments":"2.9.26 -- We have a confirmed meeting for 2/19 on site with Celestica team."},{"id":"RAIL-047","category":"Bin Audit","dateAdded":"2025-12-18","site":"All Sites","primaryOwner":"Aaron Geddes","supportingOwners":"Bernie, Brian Francis","action":"Correct part number (:1R6R9) and warehouse path (8001-2000-Z327) to enable Wichita Corsair work order creation.","priority":"High","dueDate":"2026-02-28","function":"P&E","status":"Completed","comments":"Load contract and order under the approved Corsair part number configuration."},{"id":"RAIL-048","category":"Bin Audit","dateAdded":"2025-12-05","site":"All Sites","primaryOwner":"Aaron Geddes","supportingOwners":"","action":"Resolve mismatch where orders were cancelled in WMS and SAP, but DO# remains open in SAP.","priority":"High","dueDate":"2026-03-31","function":"P&E","status":"In Progress","comments":"3.27 -- The business will be working this item."},{"id":"RAIL-049","category":"Bin Audit","dateAdded":"2026-01-13","site":"All Sites","primaryOwner":"Aaron Geddes","supportingOwners":"Roman Corona","action":"PE to own STO order resolution","priority":"High","dueDate":"2026-03-13","function":"P&E","status":"In Progress","comments":"2.27 -- CPM and P&E to work together since this ties into PLH work."},{"id":"RAIL-050","category":"Bin Audit","dateAdded":"2026-01-07","site":"All Sites","primaryOwner":"Roman Corona","supportingOwners":"Michael Kleim","action":"Boeing to add potential SPOC 002 nomenclature to the table for EDI to capture (i.e. SPOC 002, SPOC-002, etc.)","priority":"High","dueDate":"2026-02-04","function":"Program Management","status":"On Hold","comments":""},{"id":"RAIL-051","category":"Bin Audit","dateAdded":"2025-08-22","site":"Engines","primaryOwner":"Aaron Geddes","supportingOwners":"","action":"Aaron needs to get his team members over to badging","priority":"High","dueDate":"2026-03-15","function":"P&E","status":"Completed","comments":"2.12 -- Robyn and CPM were on site at Sky Harbor yesterday. Wifi and badge access worked."},{"id":"RAIL-052","category":"Bin Audit","dateAdded":"2026-01-12","site":"All Sites","primaryOwner":"Aaron Geddes","supportingOwners":"","action":"P&E team new account assignment update(s)","priority":"Low","dueDate":"2026-01-30","function":"P&E","status":"Completed","comments":""},{"id":"RAIL-053","category":"Bin Audit","dateAdded":"2026-02-20","site":"All Sites","primaryOwner":"Aaron Geddes","supportingOwners":"","action":"Transactional orders with no RFQ for Honeywell","priority":"High","dueDate":"2026-03-31","function":"P&E","status":"Canceled","comments":"3.27 -- We are getting file after SSA and SSB file is completed."},{"id":"RAIL-054","category":"Bin Audit","dateAdded":"2026-02-20","site":"All Sites","primaryOwner":"Lisa","supportingOwners":"","action":"Lisa's access is awaiting leadership approval","priority":"High","dueDate":"2026-03-31","function":"P&E","status":"Completed","comments":"3.27 -- Lisa has access."},{"id":"RAIL-055","category":"Bin Audit","dateAdded":"2026-01-29","site":"All Sites","primaryOwner":"Brian Chan","supportingOwners":"","action":"Tool buyers trained on contract customer system -- specific part not on contract causing conflict","priority":"High","dueDate":"2026-03-31","function":"Planning","status":"In Progress","comments":""},{"id":"RAIL-056","category":"Bin Audit","dateAdded":"2026-01-16","site":"All Sites","primaryOwner":"Brian Chan","supportingOwners":"","action":"Provide parts list to Chris on bin statuses and the three year look back to provide status","priority":"High","dueDate":"2026-03-31","function":"Planning","status":"In Progress","comments":"We need Honeywell to provide forecast when we price."},{"id":"RAIL-057","category":"Bin Audit","dateAdded":"2025-11-07","site":"All Sites","primaryOwner":"Franzis Schiavo","supportingOwners":"","action":"Novation #2 is at $41M in HON spend with 50 parts. Avoid selling parts at a loss","priority":"High","dueDate":"2026-03-31","function":"Product Line","status":"In Progress","comments":"3.20.26 -- Having to provide a get-to-green recovery plan."},{"id":"RAIL-058","category":"Bin Audit","dateAdded":"2026-01-16","site":"All Sites","primaryOwner":"Roman Corona","supportingOwners":"","action":"Part mismatches for bin sites","priority":"High","dueDate":"2026-01-30","function":"Program Management","status":"Completed","comments":"Need to identify actions and action owners to drive execution and completion of bins with part mismatches."},{"id":"RAIL-059","category":"Bin Audit","dateAdded":"2026-01-16","site":"All Sites","primaryOwner":"Roman Corona","supportingOwners":"","action":"Boeing mobile app reliability","priority":"High","dueDate":"2026-01-30","function":"Program Solutions","status":"Completed","comments":"Boeing app providing inaccurate data."},{"id":"RAIL-060","category":"Bin Audit","dateAdded":"2026-02-20","site":"All Sites","primaryOwner":"Michael Formanek","supportingOwners":"","action":"Nameplates","priority":"High","dueDate":"2026-04-30","function":"Product Line","status":"In Progress","comments":"3.20.26 -- Michael Formanek agreed to take this action."},{"id":"RAIL-061","category":"Bin Audit","dateAdded":"2026-01-07","site":"All Sites","primaryOwner":"David Lee","supportingOwners":"","action":"Honeywell to issue all purchase orders exclusively using the standardized SPOC 002 format","priority":"High","dueDate":"2026-02-27","function":"QA","status":"Canceled","comments":"1.23 -- Boeing to update the EDI reference table to recognize SPOC 002 variants."},{"id":"RAIL-062","category":"Bin Audit","dateAdded":"2026-01-28","site":"Raunheim","primaryOwner":"Roman Corona","supportingOwners":"","action":"Ask Program Solutions to change the site to allow 2 open scans at a time","priority":"High","dueDate":"2026-02-05","function":"Program Management","status":"Completed","comments":"2.4 -- Program solutions has made the updates to the account."},{"id":"RAIL-063","category":"Bin Audit","dateAdded":"2026-01-28","site":"Raunheim","primaryOwner":"Roman Corona","supportingOwners":"","action":"Service Hub Training for Honeywell EMEA team members","priority":"Medium","dueDate":"2026-02-05","function":"Program Management","status":"Completed","comments":"1.30 -- Chris will give the team time to run through training during EMEA meeting."},{"id":"RAIL-064","category":"Bin Audit","dateAdded":"2026-01-28","site":"All Sites","primaryOwner":"Aaron Geddes","supportingOwners":"","action":"Aged bins 30+ days","priority":"High","dueDate":"2026-02-28","function":"P&E","status":"Completed","comments":"1.30 -- Need P&E to action QA response."},{"id":"RAIL-065","category":"Bin Audit","dateAdded":"2026-02-10","site":"All Sites","primaryOwner":"Michael Kleim","supportingOwners":"","action":"1200 controls for expired bearings in Restricted inventory in Chandler across sloc 8003 2000 & 2001","priority":"High","dueDate":"2026-03-30","function":"Program Management","status":"In Progress","comments":"3.27 -- We are going to obtain a new list and see if we can get support."},{"id":"RAIL-066","category":"Bin Audit","dateAdded":"2026-01-29","site":"All Sites","primaryOwner":"Rosie Butler","supportingOwners":"Chris Ball","action":"QA/Sales to load 2026 certs into HASP","priority":"High","dueDate":"2026-02-27","function":"QA","status":"Completed","comments":"2.20 -- Chris confirmed that this is done."},{"id":"RAIL-067","category":"Bin Audit","dateAdded":"2026-03-27","site":"All Sites","primaryOwner":"Roman Corona","supportingOwners":"","action":"Set up meeting with FSR, Commodity Team, Bin Focals, and Boeing functions (CPM, Sales, Ops, etc.)","priority":"High","dueDate":"2026-04-02","function":"Program Management","status":"New","comments":"3.27 -- Corona to set up meeting next week for both enterprises."},{"id":"RAIL-068","category":"Bin Audit","dateAdded":"2026-01-30","site":"All Sites","primaryOwner":"Roman Corona","supportingOwners":"","action":"Build out separate RAIL to capture status, actions, and burndown of the part mismatches","priority":"High","dueDate":"2026-02-05","function":"Program Management","status":"Completed","comments":"1.30.26 -- about 8k parts left to work."},{"id":"RAIL-069","category":"Bin Audit","dateAdded":"2026-01-22","site":"Kits","primaryOwner":"Jen Gammons","supportingOwners":"","action":"Implement new kit","priority":"High","dueDate":"2026-03-31","function":"Program Solutions","status":"In Progress","comments":"2.27 -- Changes from Honeywell have been received."},{"id":"RAIL-070","category":"Bin Audit","dateAdded":"2026-02-04","site":"All Sites","primaryOwner":"Roger McCully","supportingOwners":"Chris Ball","action":"Sales double check all accounts for 8130 attributes in SAP","priority":"High","dueDate":"2026-02-28","function":"Boeing Sales","status":"Completed","comments":"2/4 -- Is the MDG 8130 flag set correctly at the customer level where required?"},{"id":"RAIL-071","category":"Bin Audit","dateAdded":"2026-01-13","site":"All Sites","primaryOwner":"Joshua Chircus","supportingOwners":"Michelle Knoll","action":"Identify who would be responsible for reviewing the restricted batches and releasing blocks to make stock viable","priority":"High","dueDate":"2026-03-31","function":"QA","status":"On Hold","comments":"3.27 -- Michael Kleim is going to provide Josh with a new list and this will be ongoing."},{"id":"RAIL-072","category":"Bin Audit","dateAdded":"2026-02-13","site":"All Sites","primaryOwner":"David Sloan","supportingOwners":"","action":"Update certifications, 8130 docs, other HON information such as Letters of Authorization","priority":"High","dueDate":"2026-03-15","function":"QA","status":"In Progress","comments":"2/13 -- HON ODA oversight should send us a formal change with expected time to implement."},{"id":"RAIL-073","category":"Bin Audit","dateAdded":"2026-02-16","site":"All Sites","primaryOwner":"David Sloan","supportingOwners":"","action":"Material analysis at incoming as additional control risk mitigator for critical components.","priority":"High","dueDate":"2026-03-30","function":"QA","status":"In Progress","comments":"2/16 -- xRF Spectroscopy using handheld XRF analyzer. Identify target population to run pilot."},{"id":"RAIL-074","category":"Bin Audit","dateAdded":"2026-01-14","site":"All Sites","primaryOwner":"Roger McCully","supportingOwners":"Chris Ball","action":"Addressing the 7k parts that are off-contract/unpriced","priority":"High","dueDate":"2026-03-31","function":"Boeing Sales","status":"Completed","comments":"3.20.2026 -- Taking this off since we started to focus on stratification efforts."},{"id":"RAIL-075","category":"Bin Audit","dateAdded":"2025-11-07","site":"All Sites","primaryOwner":"Roger McCully","supportingOwners":"","action":"Pricing extended renewal","priority":"High","dueDate":"2026-04-30","function":"Boeing Sales","status":"In Progress","comments":"3.27.26 -- Extension will be agreed through April 30. Sales working with contracts and HON to finalize."},{"id":"RAIL-076","category":"Bin Audit","dateAdded":"2026-02-20","site":"All Sites","primaryOwner":"Chris Ball","supportingOwners":"Roger McCully","action":"Contract audit to align with SAP so failed scans are resolved","priority":"High","dueDate":"2026-03-31","function":"Boeing Sales","status":"Completed","comments":"2/20 -- Need supply agreement to align with SAP contract data for bins that are misaligned."},{"id":"RAIL-077","category":"Bin Audit","dateAdded":"2025-11-07","site":"All Sites","primaryOwner":"Roger McCully","supportingOwners":"","action":"Amendment to R00044 with defined OTD language","priority":"High","dueDate":"2026-04-30","function":"Boeing Sales","status":"In Progress","comments":"3.27.26 -- No updates same status."},{"id":"RAIL-078","category":"Bin Audit","dateAdded":"2026-01-14","site":"All Sites","primaryOwner":"Chris Ball","supportingOwners":"Aaron Geddes","action":"Sales to update PE rep to accounts","priority":"Medium","dueDate":"2026-04-10","function":"Boeing Sales","status":"In Progress","comments":"3.27.26 -- Seraya has been added but accounts have been changed/updated."},{"id":"RAIL-079","category":"Bin Audit","dateAdded":"2026-01-14","site":"All Sites","primaryOwner":"Chris Ball","supportingOwners":"","action":"Sales to own ensuring each account has the shelf life setup correctly by account for GA","priority":"Low","dueDate":"2026-04-30","function":"Boeing Sales","status":"In Progress","comments":"3.13 -- All GA accounts will say 33% or greater."},{"id":"RAIL-080","category":"Bin Audit","dateAdded":"","site":"All Sites","primaryOwner":"Michael Kleim","supportingOwners":"Chris Ball","action":"Need to keep track of depletion of inventory for SPS parts","priority":"High","dueDate":"","function":"Boeing Sales","status":"On Hold","comments":"3.13 -- Monitor this on a monthly basis."},{"id":"RAIL-081","category":"Bin Audit","dateAdded":"2026-03-13","site":"All Sites","primaryOwner":"Roger McCully","supportingOwners":"","action":"Sales to set up meeting with Kat on transactional parts process","priority":"High","dueDate":"2026-04-15","function":"Boeing Sales","status":"New","comments":"3.27 -- Transactional parts taking too long to get a response."},{"id":"RAIL-082","category":"Bin Audit","dateAdded":"2026-03-27","site":"All Sites","primaryOwner":"Chris Ball","supportingOwners":"","action":"Honeywell name change -- remove Honeywell International verbiage and update accounting","priority":"High","dueDate":"2026-04-03","function":"Boeing Sales","status":"New","comments":"3.27 INC7978939 to update the name and quality docs."},{"id":"RAIL-083","category":"Sky Harbor Ramp Up","dateAdded":"2026-01-28","site":"Sky Harbor","primaryOwner":"Roman Corona","supportingOwners":"Javi Padron","action":"Drop orders for bins","priority":"High","dueDate":"2026-02-13","function":"Program Management","status":"Completed","comments":"2/11 -- Workbenches have been set up and order flow has resumed."},{"id":"RAIL-084","category":"Sky Harbor Ramp Up","dateAdded":"2026-01-30","site":"Sky Harbor","primaryOwner":"Pat Phillips","supportingOwners":"Miguel Candelaria","action":"Provide parts list for the additional 3 work stations","priority":"High","dueDate":"2026-03-13","function":"Honeywell Team","status":"In Progress","comments":"2/9 -- Miguel Candelaria working this."},{"id":"RAIL-085","category":"Sky Harbor Ramp Up","dateAdded":"2026-02-05","site":"Sky Harbor","primaryOwner":"Pat Phillips","supportingOwners":"Miguel Candelaria","action":"Establish 4 workbenches to support site ramp-up","priority":"High","dueDate":"2026-02-13","function":"Honeywell Team","status":"Completed","comments":"2/12 -- Workbenches were confirmed to be set up. HON team advised Q4 2026 output 60+ engines/week."},{"id":"RAIL-086","category":"Sky Harbor Ramp Up","dateAdded":"2026-02-05","site":"Sky Harbor","primaryOwner":"Brian Chan","supportingOwners":"","action":"Load Forecast for ramp-up","priority":"Critical","dueDate":"2026-02-13","function":"Planning","status":"Completed","comments":"2/5 -- Spoke to Brian about loading forecast."},{"id":"RAIL-087","category":"Sky Harbor Ramp Up","dateAdded":"2026-02-05","site":"Sky Harbor","primaryOwner":"Roman Corona","supportingOwners":"","action":"Analysis of current stock position in Chandler and Miami to identify all shortages","priority":"High","dueDate":"2026-02-09","function":"Program Management","status":"Completed","comments":"2/5 -- Analysis to be completed to snapshot current inventory positions at both Chandler and Miami FSLs."},{"id":"RAIL-088","category":"Sky Harbor Ramp Up","dateAdded":"2026-02-25","site":"Sky Harbor","primaryOwner":"Roman Corona","supportingOwners":"","action":"Run parts list from ramp up against MB52 to get positions","priority":"High","dueDate":"2026-03-13","function":"Program Management","status":"Completed","comments":"2.25 -- Roman to pull current stock positions for Chandler and Miami."},{"id":"RAIL-089","category":"Sky Harbor Ramp Up","dateAdded":"2026-02-27","site":"Sky Harbor","primaryOwner":"Miguel Candelaria","supportingOwners":"Fred Rivers","action":"Provide parts list for the additional 4 work stations","priority":"High","dueDate":"2026-03-13","function":"Honeywell Team","status":"New","comments":""},{"id":"RAIL-090","category":"Planning / CPM","dateAdded":"2025-12-15","site":"Sky Harbor","primaryOwner":"Brian Chan","supportingOwners":"","action":"Load Forecast for ramp-up","priority":"Critical","dueDate":"2026-03-06","function":"Planning","status":"Completed","comments":"2.26 -- 2/5 -- Spoke to Brian about loading forecast."},{"id":"RAIL-091","category":"Planning / CPM","dateAdded":"2026-02-03","site":"All Sites","primaryOwner":"TBD","supportingOwners":"","action":"Schedule next SIOP","priority":"Medium","dueDate":"2026-03-06","function":"TBD","status":"New","comments":"2/4 -- This will be a recurring event. When do we want to start?"},{"id":"RAIL-092","category":"Planning / CPM","dateAdded":"2026-02-05","site":"Sky Harbor","primaryOwner":"Roman Corona","supportingOwners":"","action":"Set up site walk with Planning and Program Solutions","priority":"High","dueDate":"2026-02-05","function":"Program Management","status":"Completed","comments":"2/5 -- set up meeting so that the team can execute walkthrough at the site."},{"id":"RAIL-093","category":"Planning / CPM","dateAdded":"2026-02-04","site":"All Sites","primaryOwner":"Roman Corona","supportingOwners":"","action":"Breakout the historical bin scans differently","priority":"High","dueDate":"2026-03-13","function":"Program Management","status":"Completed","comments":"2.25 -- Three and five year lookbacks have been completed for the big 8 sites."},{"id":"RAIL-094","category":"Planning / CPM","dateAdded":"2026-02-05","site":"Sky Harbor","primaryOwner":"Roman Corona","supportingOwners":"","action":"Analysis of current stock position in Chandler and Miami to identify all shortages","priority":"High","dueDate":"2026-02-23","function":"Program Management","status":"Completed","comments":"2.8 -- Analysis has been completed to get FSL views."},{"id":"RAIL-095","category":"Planning / CPM","dateAdded":"2026-02-11","site":"Tempe","primaryOwner":"Roman Corona","supportingOwners":"","action":"Set up site walk with Planning and Program Solutions","priority":"High","dueDate":"2026-02-11","function":"Program Management","status":"Completed","comments":"2/11 -- Add a meeting for the walkthrough with Tempe 11:30 - 1:30."},{"id":"RAIL-096","category":"Planning / CPM","dateAdded":"2026-02-10","site":"All Sites","primaryOwner":"Brian Chan","supportingOwners":"","action":"Propose new SOP to mitigate slow-moving bins -- supermarket into central location to improve service level","priority":"High","dueDate":"2026-03-31","function":"Program Solutions","status":"New","comments":"2/10 -- Not deployed anywhere but Honeywell Tempe team was open to suggestions."},{"id":"RAIL-097","category":"Planning / CPM","dateAdded":"2026-02-10","site":"All Sites","primaryOwner":"TBD","supportingOwners":"","action":"Physical audit of the bins on site and update bin maps (remove anything not physically at HON)","priority":"High","dueDate":"2026-03-31","function":"TBD","status":"New","comments":"2/10 -- Who will be responsible for physically removing the bins?"},{"id":"RAIL-098","category":"Planning / CPM","dateAdded":"2026-02-10","site":"All Sites","primaryOwner":"TBD","supportingOwners":"","action":"Establish measurable/meaningful KPIs that drive performance and identify gaps for the bin programs","priority":"High","dueDate":"2026-02-20","function":"TBD","status":"New","comments":"2/10 -- Program management is putting together data dashboards."},{"id":"RAIL-099","category":"Planning / CPM","dateAdded":"2026-03-27","site":"All Sites","primaryOwner":"Chris Ball","supportingOwners":"Roman Corona","action":"SAP and service hub not matching contract data for Honeywell bins.","priority":"High","dueDate":"2026-04-03","function":"Program Management","status":"New","comments":"3.27 -- SAP providing conflicting data on contract status causing scan failures."},{"id":"RAIL-100","category":"Planning / CPM","dateAdded":"2026-03-27","site":"All Sites","primaryOwner":"Roger McCully","supportingOwners":"","action":"Roger needs to get SAP contract file to identify scope of parts missing contract data in SAP","priority":"High","dueDate":"2026-04-01","function":"Program Management","status":"New","comments":"3.27 -- Corona to get working list from SAP from Roger."},{"id":"RAIL-101","category":"SIOP","dateAdded":"2026-03-10","site":"All Sites","primaryOwner":"Boeing Team","supportingOwners":"","action":"Submit formal request letter to Honeywell sourcing proposing 30-day frozen-window to reduce PO volatility","priority":"High","dueDate":"2026-04-30","function":"Boeing Sales","status":"New","comments":"3/10 -- Guillermo needs formal request to modify frozen window to 30 days instead of 14."},{"id":"RAIL-102","category":"SIOP","dateAdded":"2026-03-10","site":"All Sites","primaryOwner":"Aaron Geddes","supportingOwners":"","action":"Work Q2 POs/forecast and inventory data to confirm which orders can be pulled to April.","priority":"High","dueDate":"2026-03-31","function":"P&E","status":"New","comments":"3/10 -- Teams to review inventory and indicate which June/May orders can be pulled into April."},{"id":"RAIL-103","category":"SIOP","dateAdded":"2026-03-10","site":"All Sites","primaryOwner":"Roman Corona","supportingOwners":"","action":"Schedule a follow-up focused meeting on bins in ~2 weeks and invite relevant leaders and team members","priority":"High","dueDate":"2026-03-25","function":"Program Management","status":"Completed","comments":"3/10 -- Roman to set up the follow-up meeting with the teams."},{"id":"RAIL-104","category":"SIOP","dateAdded":"2026-03-10","site":"All Sites","primaryOwner":"Garrett Mark","supportingOwners":"Steven Cuddihy","action":"Create KPIs for PO placement performance including weekly snapshots and trend vs baseline","priority":"High","dueDate":"2026-03-31","function":"Planning","status":"New","comments":"3/10 -- Produce weekly KPI showing % of required POs placed on time vs plan."},{"id":"RAIL-105","category":"SIOP","dateAdded":"2026-03-10","site":"All Sites","primaryOwner":"Roman Corona","supportingOwners":"","action":"Send bin stratification files (pricing, contract status, 3/5-year scan activity) for Engines, Sky Harbor R&O, and Tempe to site teams","priority":"High","dueDate":"2026-03-13","function":"Program Management","status":"Completed","comments":"3/10 -- Provide site-specific lists of scan codes/bins that have zero activity."},{"id":"RAIL-106","category":"SIOP","dateAdded":"2026-03-10","site":"All Sites","primaryOwner":"Adrian Parra","supportingOwners":"Sergio Ramirez, Fred Rivers","action":"Remove identified inactive scan-code bins physically and remove scan codes from bin program","priority":"High","dueDate":"2026-03-27","function":"Honeywell Team","status":"New","comments":"3/10 -- Guillermo committed to the sites having this completed in a few weeks."},{"id":"RAIL-107","category":"SIOP","dateAdded":"2026-03-10","site":"All Sites","primaryOwner":"Guillermo Juvera","supportingOwners":"Ginger Rivera","action":"Coordinate offline with Ginger to review segment-level QA resolution data for Miami","priority":"High","dueDate":"2026-03-31","function":"Program Management","status":"New","comments":""},{"id":"RAIL-108","category":"SIOP","dateAdded":"2026-03-10","site":"All Sites","primaryOwner":"Guillermo Juvera","supportingOwners":"Garrett Mark","action":"Provide list and plan for using Honeywell/KBR inspection resources and timeline to deploy","priority":"High","dueDate":"2026-03-31","function":"Planning","status":"New","comments":"3/10 -- Can Honeywell QA team members help with our QA actions?"},{"id":"RAIL-109","category":"SIOP","dateAdded":"2026-03-13","site":"All Sites","primaryOwner":"Roman Corona","supportingOwners":"","action":"Contract verification of the 1074 parts showing up as off-contract","priority":"High","dueDate":"2026-04-12","function":"Program Management","status":"New","comments":"3.27 -- Parts have been validated by sales. Next step is to reach out to the sites."},{"id":"RAIL-110","category":"SIOP","dateAdded":"2026-03-13","site":"All Sites","primaryOwner":"Roman Corona","supportingOwners":"","action":"Create new lot size based on velocity codes","priority":"High","dueDate":"2026-03-31","function":"Program Management","status":"In Progress","comments":"3/20 -- Need meeting set up with Brian (planning) to get a method in place."},{"id":"RAIL-111","category":"SIOP","dateAdded":"2026-03-13","site":"All Sites","primaryOwner":"Roman Corona","supportingOwners":"","action":"Overstock management at each site -- map the process end to end","priority":"High","dueDate":"2026-03-31","function":"Program Management","status":"In Progress","comments":"3/20 -- Actively mapping the overstock management landscape across all three sites."},{"id":"RAIL-112","category":"SIOP","dateAdded":"2026-03-13","site":"All Sites","primaryOwner":"Honeywell Bin Focal","supportingOwners":"","action":"Send forecast to Boeing Distribution for any bin moving to PO and account for stock in bins","priority":"High","dueDate":"2026-03-31","function":"Honeywell Team","status":"New","comments":"3/13 -- How does HON send us over the FCST for any bin moving to PO?"},{"id":"RAIL-113","category":"SIOP","dateAdded":"2026-03-13","site":"All Sites","primaryOwner":"Garrett Mark","supportingOwners":"","action":"Put all actions in a matrix to see numbers by site","priority":"High","dueDate":"2026-03-31","function":"Planning","status":"New","comments":"3/13 -- Garrett action."},{"id":"RAIL-114","category":"SIOP","dateAdded":"2026-03-13","site":"All Sites","primaryOwner":"Karen Mark","supportingOwners":"","action":"Setup call with Planning and Program Solutions to discuss bin strat proposal and get alignment","priority":"High","dueDate":"2026-03-31","function":"Program Solutions","status":"New","comments":"3/13 -- Karen to set up a call with Planning and Program Solutions."},{"id":"RAIL-115","category":"SIOP","dateAdded":"2026-03-20","site":"All Sites","primaryOwner":"Roman Corona","supportingOwners":"","action":"Separate the 2 actions for each site: (1) inactive bin on active part and (2) inactive part on inactive bin. Need breakout by site.","priority":"High","dueDate":"2026-03-31","function":"Program Management","status":"Completed","comments":"3/20 -- This is already done. Need to add Ginger to email and have breakout summary of the 3-4 sites."},{"id":"RAIL-116","category":"SIOP","dateAdded":"2026-03-27","site":"All Sites","primaryOwner":"Roman Corona","supportingOwners":"Brian Chan","action":"Bin sizing recommendations are slipping -- align with planning on optimization actions","priority":"High","dueDate":"2026-04-03","function":"Program Management","status":"New","comments":""},{"id":"RAIL-117","category":"PD Recovery","dateAdded":"2025-12-05","site":"All Sites","primaryOwner":"Javi Padron","supportingOwners":"","action":"Reconcile and receive outstanding stock transfers not yet posted","priority":"High","dueDate":"2026-03-31","function":"Operations","status":"In Progress","comments":"2/27 -- Stock transfer reconciliation may be creating bottlenecks impacting past-due orders."},{"id":"RAIL-118","category":"PD Recovery","dateAdded":"2025-12-05","site":"All Sites","primaryOwner":"Aaron Geddes","supportingOwners":"","action":"Resolve mismatch where orders canceled in WMS and SAP but DO# remains open in SAP","priority":"High","dueDate":"2026-03-31","function":"P&E","status":"In Progress","comments":"2/27 -- Open DOs in SAP may be overstated; data cleanup could improve recovery accuracy."},{"id":"RAIL-119","category":"PD Recovery","dateAdded":"2026-01-13","site":"All Sites","primaryOwner":"Aaron Geddes","supportingOwners":"Roman Corona","action":"PE to own STO (stock transfer) order resolution","priority":"High","dueDate":"2026-03-31","function":"P&E","status":"In Progress","comments":"2/27 -- Align PM, P&E, and Planning on stock transfer ownership/process."},{"id":"RAIL-120","category":"PD Recovery","dateAdded":"2026-02-20","site":"All Sites","primaryOwner":"Aaron Geddes","supportingOwners":"","action":"Transactional orders with no RFQ for Honeywell","priority":"High","dueDate":"2026-03-31","function":"P&E","status":"New","comments":"2/27 -- Transactional orders without RFQs may be contributing to past-due bottlenecks."},{"id":"RAIL-121","category":"PD Recovery","dateAdded":"2026-01-16","site":"All Sites","primaryOwner":"Kevin Morgan","supportingOwners":"","action":"Part number findings regarding forecast needs for parts that have no history","priority":"High","dueDate":"2026-03-31","function":"Honeywell Team","status":"New","comments":"2/27 -- Honeywell site focals to provide EAU forecast to HON CM for inactive bin parts."},{"id":"RAIL-122","category":"PD Recovery","dateAdded":"2026-01-13","site":"All Sites","primaryOwner":"Joshua Chircus","supportingOwners":"Michelle Knoll","action":"Identify who is responsible for reviewing restricted batches and releasing blocks to make stock viable","priority":"High","dueDate":"2026-03-31","function":"QA","status":"In Progress","comments":"2/27 -- Identify QA owner for restricted batch review/release to unlock inventory."},{"id":"RAIL-123","category":"PD Recovery","dateAdded":"2026-02-20","site":"All Sites","primaryOwner":"Chris Ball","supportingOwners":"Roman Corona","action":"Contract audit to align with SAP so failed scans are resolved","priority":"High","dueDate":"2026-04-03","function":"Program Management","status":"New","comments":"3.27 -- Work on proactive action to get parts list of contract alignment with SAP."},{"id":"RAIL-124","category":"HAFB Work Session","dateAdded":"2026-03-11","site":"All Sites","primaryOwner":"Karen Mark","supportingOwners":"","action":"Provide dashboard access to Kathleen for bin scan activity report and add to distribution list","priority":"High","dueDate":"2026-03-22","function":"Program Solutions","status":"New","comments":""},{"id":"RAIL-125","category":"HAFB Work Session","dateAdded":"2026-03-10","site":"All Sites","primaryOwner":"Aaron Geddes","supportingOwners":"","action":"Work Q2 POs/forecast and inventory data to confirm which orders can be pulled to April.","priority":"High","dueDate":"2026-03-31","function":"P&E","status":"New","comments":"3/10 -- Teams to review inventory."},{"id":"RAIL-126","category":"HAFB Work Session","dateAdded":"2026-03-10","site":"All Sites","primaryOwner":"Roman Corona","supportingOwners":"","action":"Schedule a follow-up focused meeting on bins in ~2 weeks and invite relevant leaders","priority":"High","dueDate":"2026-03-25","function":"Program Management","status":"Completed","comments":"3/10 -- Roman to set up the follow-up meeting with the teams."},{"id":"RAIL-127","category":"HAFB Work Session","dateAdded":"2026-03-10","site":"All Sites","primaryOwner":"Steven Cuddihy","supportingOwners":"","action":"Create KPIs for PO placement performance with weekly snapshots and trend vs baseline","priority":"High","dueDate":"2026-03-31","function":"Planning","status":"New","comments":"3/10 -- Produce weekly KPI showing % of required POs placed on time."},{"id":"RAIL-128","category":"HAFB Work Session","dateAdded":"2026-03-10","site":"All Sites","primaryOwner":"Roman Corona","supportingOwners":"","action":"Send bin stratification files for Engines, Sky Harbor R&O, and Tempe to site teams","priority":"High","dueDate":"2026-03-13","function":"Program Management","status":"Completed","comments":"3/10 -- Provide site-specific lists of scan codes/bins that have zero activity."},{"id":"RAIL-129","category":"HAFB Work Session","dateAdded":"2026-03-10","site":"All Sites","primaryOwner":"Adrian Parra","supportingOwners":"Sergio Ramirez, Fred Rivers","action":"Remove identified inactive scan-code bins physically and remove from bin program","priority":"High","dueDate":"2026-03-27","function":"Honeywell Team","status":"New","comments":"3/10 -- Guillermo committed to sites having this completed."},{"id":"RAIL-130","category":"HAFB Work Session","dateAdded":"2026-03-10","site":"All Sites","primaryOwner":"Guillermo Juvera","supportingOwners":"Ginger Rivera","action":"Coordinate offline with Ginger to review QA resolution data for Miami","priority":"High","dueDate":"2026-03-31","function":"Program Management","status":"New","comments":""},{"id":"RAIL-131","category":"HAFB Work Session","dateAdded":"2026-03-10","site":"All Sites","primaryOwner":"Guillermo Juvera","supportingOwners":"Garrett Mark","action":"Provide list and plan for using Honeywell/KBR inspection resources","priority":"High","dueDate":"2026-03-31","function":"Planning","status":"New","comments":"3/10 -- Can Honeywell QA team members help with our QA actions?"},{"id":"RAIL-132","category":"General","dateAdded":"2025-08-26","site":"N/A","primaryOwner":"Roman Corona","supportingOwners":"","action":"Check with Ginger on September MOR","priority":"High","dueDate":"2025-08-27","function":"TBD","status":"New","comments":"We mentioned we would cancel August and postpone to September."}];
+
+// -- State ---------------------------------------------------------------------
+let DATA=[...RAW_DATA];
+// Load any saved edits from localStorage
+(()=>{
+  try{
+    const saved=localStorage.getItem('rail_edits');
+    if(saved){
+      const edits=JSON.parse(saved);
+      DATA=DATA.map(r=>(edits[r.id]?Object.assign({},r,edits[r.id]):r));
+    }
+  }catch(e){}
+})();
+
+let filtered=[...DATA],sortCol='dueDate',sortDir=1,page=1,overdueOnly=false;
+const PER_PAGE=25;
+let currentModalId=null;
+
+// -- Helpers -------------------------------------------------------------------
+const today=new Date();today.setHours(0,0,0,0);
+document.getElementById('header-date').textContent=today.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+
+function parseDate(s){
+  if(!s||s===''||s==='1970-01-01')return null;
+  const d=new Date(s+'T00:00:00');return isNaN(d.getTime())?null:d;
+}
+function fmtDate(s){
+  const d=parseDate(s);
+  if(!d)return'--';
+  return d.toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'});
+}
+function isOverdue(r){
+  const d=parseDate(r.dueDate);
+  return d&&d<today&&r.status!=='Completed'&&r.status!=='Canceled';
+}
+function isDueSoon(r){
+  const d=parseDate(r.dueDate);
+  return d&&d>=today&&d<=new Date(today.getTime()+7*864e5)&&r.status!=='Completed'&&r.status!=='Canceled';
+}
+function isOpen(r){return r.status!=='Completed'&&r.status!=='Canceled';}
+
+function badge(status){
+  const k=status.replace(/\s/g,'-');
+  return`<span class="badge badge-${k}">${status}</span>`;
+}
+function priBadge(p){
+  return`<span class="pri-badge pri-${p}">${p}</span>`;
+}
+function dateCell(r){
+  const d=parseDate(r.dueDate);
+  if(!d)return`<span class="date-none">--</span>`;
+  const s=fmtDate(r.dueDate);
+  if(isOverdue(r))return`<span class="date-overdue">! ${s}</span>`;
+  if(isDueSoon(r))return`<span class="date-warn">${s}</span>`;
+  return`<span class="date-ok">${s}</span>`;
+}
+
+// -- Metrics -------------------------------------------------------------------
+function buildMetrics(){
+  const open=DATA.filter(isOpen);
+  const overdue=DATA.filter(isOverdue);
+  const dueSoon=DATA.filter(isDueSoon);
+  const completed=DATA.filter(r=>r.status==='Completed');
+  const critOpen=open.filter(r=>r.priority==='Critical');
+  const pct=Math.round(completed.length/DATA.length*100);
+
+  const cards=[
+    {label:'Total Actions',val:DATA.length,sub:'all items tracked',accent:'accent-navy',color:'var(--navy)'},
+    {label:'Open Items',val:open.length,sub:'active + new + on hold',accent:'accent-steel',color:'var(--steel)'},
+    {label:'Overdue',val:overdue.length,sub:'past due date',accent:'accent-red',color:'var(--red)'},
+    {label:'Due This Week',val:dueSoon.length,sub:'next 7 days',accent:'accent-amber',color:'var(--amber)'},
+    {label:'Critical Open',val:critOpen.length,sub:'highest priority',accent:'accent-red',color:'var(--red)'},
+    {label:'Completed',val:completed.length,sub:`${pct}% completion rate`,accent:'accent-green',color:'var(--green)'},
+  ];
+  document.getElementById('metrics-grid').innerHTML=cards.map(c=>`
+    <div class="metric-card ${c.accent}">
+      <div class="metric-label">${c.label}</div>
+      <div class="metric-value" style="--metric-color:${c.color}">${c.val}</div>
+      <div class="metric-sub">${c.sub}</div>
+    </div>`).join('');
+
+  const openCount=open.length;
+  document.getElementById('open-badge').textContent=openCount;
+}
+
+// -- Filter Dropdowns ----------------------------------------------------------
+function buildDropdowns(){
+  const cats=[...new Set(DATA.map(r=>r.category))].sort();
+  const owners=[...new Set(DATA.map(r=>r.primaryOwner).filter(Boolean))].sort();
+  document.getElementById('f-category').innerHTML=`<option value="">All Categories</option>`+cats.map(c=>`<option>${c}</option>`).join('');
+  document.getElementById('f-owner').innerHTML=`<option value="">All Owners</option>`+owners.map(o=>`<option>${o}</option>`).join('');
+}
+
+// -- Filter & Sort -------------------------------------------------------------
+function applyFilters(){
+  const q=document.getElementById('search').value.trim().toLowerCase();
+  const st=document.getElementById('f-status').value;
+  const pr=document.getElementById('f-priority').value;
+  const ca=document.getElementById('f-category').value;
+  const ow=document.getElementById('f-owner').value;
+
+  filtered=DATA.filter(r=>{
+    if(st&&r.status!==st)return false;
+    if(pr&&r.priority!==pr)return false;
+    if(ca&&r.category!==ca)return false;
+    if(ow&&r.primaryOwner!==ow)return false;
+    if(overdueOnly&&!isOverdue(r))return false;
+    if(q){
+      const haystack=(r.action+r.primaryOwner+r.id+r.site+r.comments).toLowerCase();
+      if(!haystack.includes(q))return false;
+    }
+    return true;
+  });
+
+  doSort(false);
+  page=1;
+  renderTable();
+}
+
+function sortBy(col,evt){
+  document.querySelectorAll('thead th').forEach(th=>th.classList.remove('sort-asc','sort-desc'));
+  if(sortCol===col)sortDir*=-1;else{sortCol=col;sortDir=1;}
+  evt.currentTarget.classList.add(sortDir===1?'sort-asc':'sort-desc');
+  doSort(true);renderTable();
+}
+
+function doSort(render){
+  const priOrder={Critical:0,High:1,Medium:2,Low:3};
+  filtered.sort((a,b)=>{
+    let av=a[sortCol]??'',bv=b[sortCol]??'';
+    if(sortCol==='priority'){av=priOrder[av]??9;bv=priOrder[bv]??9;return(av-bv)*sortDir;}
+    if(sortCol==='dueDate'||sortCol==='dateAdded'){av=av||'9999-12-31';bv=bv||'9999-12-31';}
+    return av<bv?-sortDir:av>bv?sortDir:0;
+  });
+  if(render)renderTable();
+}
+
+function toggleOverdue(btn){
+  overdueOnly=!overdueOnly;
+  btn.classList.toggle('active',overdueOnly);
+  page=1;applyFilters();
+}
+
+// -- Render Table --------------------------------------------------------------
+function renderTable(){
+  const start=(page-1)*PER_PAGE,end=start+PER_PAGE;
+  const slice=filtered.slice(start,end);
+
+  const count=filtered.length;
+  document.getElementById('filter-count').textContent=`${count} of ${DATA.length}`;
+
+  if(!slice.length){
+    document.getElementById('table-body').innerHTML=`
+      <tr><td colspan="7">
+        <div class="empty-state">
+          <div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
+          <div class="empty-title">No actions match your filters</div>
+          <div class="empty-sub">Try clearing a filter or broadening your search</div>
+        </div>
+      </td></tr>`;
+  } else {
+    document.getElementById('table-body').innerHTML=slice.map(r=>{
+      const rowClass=isOverdue(r)?'row-overdue':r.status==='Completed'?'row-completed':'';
+      return`<tr class="${rowClass}" onclick="openModal('${r.id}')">
+        <td class="col-id">${r.id}</td>
+        <td class="col-cat">${r.category}</td>
+        <td class="col-action" title="${r.action.replace(/"/g,'&quot;')}">${r.action}</td>
+        <td class="col-owner">${r.primaryOwner||'--'}</td>
+        <td class="col-priority">${priBadge(r.priority)}</td>
+        <td class="col-due">${dateCell(r)}</td>
+        <td class="col-status">${badge(r.status)}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  renderPagination();
+}
+
+// -- Pagination ----------------------------------------------------------------
+function renderPagination(){
+  const total=Math.ceil(filtered.length/PER_PAGE);
+  if(total<=1){document.getElementById('pagination').innerHTML='';return;}
+  const from=(page-1)*PER_PAGE+1,to=Math.min(page*PER_PAGE,filtered.length);
+  let btns='';
+  for(let i=1;i<=total;i++){
+    if(i===1||i===total||Math.abs(i-page)<=1){
+      btns+=`<button class="page-btn${i===page?' active':''}" onclick="goPage(${i})">${i}</button>`;
+    } else if(Math.abs(i-page)===2){
+      btns+=`<span class="page-ellipsis">...</span>`;
+    }
+  }
+  document.getElementById('pagination').innerHTML=`
+    <span class="page-info">Showing ${from}-${to} of ${filtered.length} actions</span>
+    <div class="page-btns">
+      <button class="page-btn" onclick="goPage(${page-1})" ${page===1?'disabled':''}>Prev</button>
+      ${btns}
+      <button class="page-btn" onclick="goPage(${page+1})" ${page===total?'disabled':''}>Next</button>
+    </div>`;
+}
+function goPage(p){const total=Math.ceil(filtered.length/PER_PAGE);if(p<1||p>total)return;page=p;renderTable();window.scrollTo({top:0,behavior:'smooth'});}
+
+// -- Modal ---------------------------------------------------------------------
+function openModal(id){
+  const r=DATA.find(x=>x.id===id);if(!r)return;
+  currentModalId=id;
+  document.getElementById('m-id').textContent=r.id;
+  document.getElementById('m-cat-badge').innerHTML=`<span style="background:var(--accent-light);color:var(--steel);font-size:9px;font-weight:600;padding:2px 7px;border-radius:4px;letter-spacing:.3px">${r.category}</span>`;
+  document.getElementById('m-action').textContent=r.action;
+  document.getElementById('m-status').innerHTML=badge(r.status);
+  document.getElementById('m-priority').innerHTML=priBadge(r.priority);
+  document.getElementById('m-owner').textContent=r.primaryOwner||'--';
+  document.getElementById('m-support').textContent=r.supportingOwners||'--';
+  document.getElementById('m-due').innerHTML=dateCell(r);
+  document.getElementById('m-added').textContent=fmtDate(r.dateAdded);
+  document.getElementById('m-site').textContent=r.site||'--';
+  document.getElementById('m-func').textContent=r.function||'--';
+  document.getElementById('m-comments').textContent=r.comments||'No comments recorded.';
+  document.getElementById('edit-status').value=r.status;
+  document.getElementById('edit-priority').value=r.priority;
+  document.getElementById('edit-comment').value='';
+  document.getElementById('save-success').classList.remove('show');
+  document.getElementById('modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  document.body.style.overflow='';
+  currentModalId=null;
+}
+function handleModalClick(e){if(e.target===document.getElementById('modal'))closeModal();}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+// -- Save Edit -----------------------------------------------------------------
+function saveEdit(){
+  if(!currentModalId)return;
+  const idx=DATA.findIndex(r=>r.id===currentModalId);if(idx<0)return;
+  const newStatus=document.getElementById('edit-status').value;
+  const newPriority=document.getElementById('edit-priority').value;
+  const comment=document.getElementById('edit-comment').value.trim();
+
+  const dateStr=today.toLocaleDateString('en-US',{month:'numeric',day:'numeric',year:'2-digit'});
+  let newComments=DATA[idx].comments||'';
+  if(comment){
+    const entry=`\n${dateStr} -- ${comment}`;
+    newComments=(newComments+entry).trim();
+  }
+
+  DATA[idx]={...DATA[idx],status:newStatus,priority:newPriority,comments:newComments};
+
+  // Persist to localStorage
+  try{
+    const saved=JSON.parse(localStorage.getItem('rail_edits')||'{}');
+    saved[currentModalId]={status:newStatus,priority:newPriority,comments:newComments};
+    localStorage.setItem('rail_edits',JSON.stringify(saved));
+  }catch(e){}
+
+  // Refresh modal display
+  openModal(currentModalId);
+  document.getElementById('save-success').classList.add('show');
+  applyFilters();
+  buildMetrics();
+  buildDashboard();
+  showToast('Changes saved locally');
+}
+
+// -- Export CSV ----------------------------------------------------------------
+function exportCSV(){
+  const headers=['Action ID','Category','Date Added','Honeywell Site','Primary Owner','Supporting Owners','Action','Priority','Due Date','Function','Status','Comments'];
+  const rows=filtered.map(r=>[
+    r.id,r.category,r.dateAdded,r.site,r.primaryOwner,r.supportingOwners,
+    `"${(r.action||'').replace(/"/g,'""')}"`,
+    r.priority,r.dueDate,r.function,r.status,
+    `"${(r.comments||'').replace(/"/g,'""').replace(/\n/g,' ')}"`
+  ].join(','));
+  const csv=[headers.join(','),...rows].join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`RAIL_Export_${today.toISOString().slice(0,10)}.csv`;
+  a.click();URL.revokeObjectURL(url);
+  showToast('CSV exported successfully');
+}
+
+// -- Toast ---------------------------------------------------------------------
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// -- Dashboard -----------------------------------------------------------------
+function buildDashboard(){
+  const open=DATA.filter(isOpen);
+  const byOwner={};
+  open.forEach(r=>{
+    const o=r.primaryOwner||'Unassigned';
+    if(!byOwner[o])byOwner[o]={New:0,'In Progress':0,'On Hold':0,total:0};
+    byOwner[o][r.status]=(byOwner[o][r.status]||0)+1;
+    byOwner[o].total++;
+  });
+  const ownerList=Object.entries(byOwner).sort((a,b)=>b[1].total-a[1].total).slice(0,14);
+
+  const byCat={};
+  open.forEach(r=>{byCat[r.category]=(byCat[r.category]||0)+1;});
+  const catList=Object.entries(byCat).sort((a,b)=>b[1]-a[1]);
+  const maxCat=catList[0]?catList[0][1]:1;
+
+  const statusCounts={New:0,'In Progress':0,'On Hold':0};
+  open.forEach(r=>{if(r.status in statusCounts)statusCounts[r.status]++;});
+  const statusColors={New:'var(--steel)','In Progress':'var(--amber)','On Hold':'#7B1FA2'};
+
+  document.getElementById('dash-grid').innerHTML=`
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <div class="dash-card-title">Open Items by Primary Owner</div>
+        <div class="dash-card-count">${open.length} open</div>
+      </div>
+      ${ownerList.map(([o,c])=>`
+        <div class="owner-row">
+          <span class="owner-name">${o}</span>
+          <div class="owner-pills">
+            ${c['New']?`<span class="owner-pill pill-new">N: ${c['New']}</span>`:''}
+            ${c['In Progress']?`<span class="owner-pill pill-ip">IP: ${c['In Progress']}</span>`:''}
+            ${c['On Hold']?`<span class="owner-pill pill-hold">H: ${c['On Hold']}</span>`:''}
+            <span class="owner-pill pill-total">${c.total}</span>
+          </div>
+        </div>`).join('')}
+    </div>
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <div class="dash-card-title">Open Items by Category</div>
+        <div class="dash-card-count">${catList.length} categories</div>
+      </div>
+      ${catList.map(([cat,cnt])=>`
+        <div class="bar-item">
+          <span class="bar-label" title="${cat}">${cat}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt/maxCat*100)}%;background:var(--steel)"></div></div>
+          <span class="bar-count">${cnt}</span>
+        </div>`).join('')}
+      <div class="status-donut-row">
+        ${Object.entries(statusCounts).map(([s,c])=>`
+          <div class="donut-item">
+            <div class="donut-dot" style="background:${statusColors[s]}"></div>
+            <span class="donut-label">${s}</span>
+            <span class="donut-val">${c}</span>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// -- Tab Switch ----------------------------------------------------------------
+function switchTab(tab,el){
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('view-rail').style.display=tab==='rail'?'block':'none';
+  document.getElementById('view-dash').style.display=tab==='dash'?'block':'none';
+}
+
+// -- Init ----------------------------------------------------------------------
+buildMetrics();
+buildDropdowns();
+doSort(false);
+applyFilters();
+buildDashboard();
+</script>
+</body>
+</html>
